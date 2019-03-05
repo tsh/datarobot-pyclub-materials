@@ -21,8 +21,11 @@ text_rect = text.get_rect()
 text_rect.centerx = 100
 text_rect.centery = 100
 
-
 window_surface.fill(BLUE)
+
+img = pygame.image.load('redfighter0004.png')
+window_surface.blit(img, (200, 200))
+
 pygame.draw.circle(window_surface, WHITE, (300, 50), 20, 0)
 
 # draw the text onto the surface
