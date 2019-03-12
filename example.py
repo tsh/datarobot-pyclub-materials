@@ -28,11 +28,13 @@ class Player:
         right = pygame.image.load('redfighter0009.png')
         self.right = pygame.transform.scale(right, (self.SPRITE_WIDTH, self.SPRITE_HEIGHT))
 
+        self.shoot_sound = pygame.mixer.Sound('shoot.wav')
+
         self.state = self.STATE_NEUTRAL
 
         self.x = (WINDOW_WIDTH / 2) - (self.SPRITE_WIDTH / 2)
         self.y = WINDOW_HEIGHT - self.SPRITE_HEIGHT
-        self.speed = 1
+        self.speed = 5
 
     def draw(self, surface):
         if self.state == self.STATE_TURNING_LEFT:
@@ -56,7 +58,9 @@ class Player:
         self.state = self.STATE_NEUTRAL
 
     def shoot(self):
+        # https://www.pygame.org/docs/ref/mixer.html#pygame.mixer.Sound
         print("pew pew")
+        pygame.mixer.Sound.play(self.shoot_sound)
 
 
 pygame.init()
@@ -75,6 +79,7 @@ player = Player()
 
 
 while True:
+    pygame.time.Clock().tick(30)
     window_surface.fill(BLUE)
 
     text = basicFont.render(str(score), True, WHITE, BLUE)
