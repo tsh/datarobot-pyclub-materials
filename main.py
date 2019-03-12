@@ -1,36 +1,26 @@
+import pygame
 import sys
 
-import pygame
+BLACK = (0,0,0)
 
 
 pygame.init()
 
-
-window_surface = pygame.display.set_mode((400, 400), pygame.HWSURFACE)
 pygame.display.set_caption('mygame')
-clock = pygame.time.Clock()
 
-# set up fonts
+window_surface = pygame.display.set_mode((700, 400), pygame.HWSURFACE)
+window_surface.fill(BLACK)
+
 basicFont = pygame.font.SysFont(None, 48)
 
-# set up the text
-WHITE = (255, 255, 255)
-BLUE = (0, 0, 255)
-text = basicFont.render('Hello world!', True, WHITE, BLUE)
-text_rect = text.get_rect()
-text_rect.centerx = 100
-text_rect.centery = 100
-
-window_surface.fill(BLUE)
+text = basicFont.render('0', True, (255,255,0), BLACK)
+window_surface.blit(text, (0,0))
 
 img = pygame.image.load('redfighter0004.png')
+img = pygame.transform.scale(img, (170, 160))
 window_surface.blit(img, (200, 200))
 
-pygame.draw.circle(window_surface, WHITE, (300, 50), 20, 0)
 
-# draw the text onto the surface
-window_surface.blit(text, text_rect)
-# draw the window onto the screen
 pygame.display.update()
 
 while True:
@@ -38,5 +28,3 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-
-    # clock.tick(15)
