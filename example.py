@@ -10,6 +10,11 @@ WINDOW_WIDTH = 1200
 WINDOW_HEIGHT = 1000
 
 
+class Meteor:
+    def __init__(self):
+
+
+
 class Player:
     STATE_NEUTRAL = 0
     STATE_TURNING_LEFT = 1
@@ -19,16 +24,16 @@ class Player:
     SPRITE_HEIGHT = 160
 
     def __init__(self):
-        neutral = pygame.image.load('redfighter0004.png')
+        neutral = pygame.image.load('assets/redfighter0004.png')
         self.neutral = pygame.transform.scale(neutral, (self.SPRITE_WIDTH, self.SPRITE_HEIGHT))
 
-        left = pygame.image.load('redfighter0001.png')
+        left = pygame.image.load('assets/redfighter0001.png')
         self.left = pygame.transform.scale(left, (self.SPRITE_WIDTH, self.SPRITE_HEIGHT))
 
-        right = pygame.image.load('redfighter0009.png')
+        right = pygame.image.load('assets/redfighter0009.png')
         self.right = pygame.transform.scale(right, (self.SPRITE_WIDTH, self.SPRITE_HEIGHT))
 
-        self.shoot_sound = pygame.mixer.Sound('shoot.wav')
+        self.shoot_sound = pygame.mixer.Sound('assets/shoot.wav')
 
         self.state = self.STATE_NEUTRAL
 
