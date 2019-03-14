@@ -11,9 +11,8 @@ WINDOW_WIDTH = 1200
 WINDOW_HEIGHT = 1000
 
 
-class Meteor:
+class BaseMeteor:
     def __init__(self):
-        self.sprite = pygame.image.load('assets/meteor0.png')
         self.x = random.randint(100, WINDOW_WIDTH  - 100)
         self.y = 0
         self.dx = random.randint(-3,3)
@@ -26,6 +25,19 @@ class Meteor:
         self.x += self.dx
         self.y += self.dy
 
+    def destroy(self):
+        pass
+
+
+class BigMeteor(BaseMeteor):
+    def __init__(self):
+        super().__init__()
+        self.sprite = pygame.image.load('assets/meteor_big.png')
+
+class MediumMeteor(BaseMeteor):
+    def __init__(self):
+        super().__init__()
+        self.sprite = pygame.image.load('assets/meteor_med.png')
 
 class Player:
     STATE_NEUTRAL = 0
@@ -91,7 +103,8 @@ basicFont = pygame.font.SysFont(None, 48)
 
 score = 0
 player = Player()
-meteor = Meteor()
+meteor = BigMeteor()
+meteor2 = MediumMeteor()
 
 
 while True:
@@ -105,6 +118,8 @@ while True:
     player.draw(window_surface)
     meteor.draw(window_surface)
     meteor.update()
+    meteor2.update()
+    meteor2.draw(window_surface)
 
     pygame.draw.circle(window_surface, WHITE, (300, 50), 20, 0)
 
