@@ -12,9 +12,9 @@ WINDOW_HEIGHT = 1000
 
 
 class BaseMeteor:
-    def __init__(self):
-        self.x = random.randint(100, WINDOW_WIDTH  - 100)
-        self.y = 0
+    def __init__(self, x, y):
+        self.x = x or random.randint(100, WINDOW_WIDTH  - 100)
+        self.y = y or random.randint(0, 200)
         self.dx = random.randint(-3,3)
         self.dy = random.randint(-3,3)
 
@@ -25,19 +25,20 @@ class BaseMeteor:
         self.x += self.dx
         self.y += self.dy
 
-    def destroy(self):
-        pass
+
+class MediumMeteor(BaseMeteor):
+    def __init__(self, x=None, y=None):
+        super().__init__(x, y)
+        self.sprite = pygame.image.load('assets/meteor_med.png')
 
 
 class BigMeteor(BaseMeteor):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, x=None, y=None):
+        super().__init__(x, y)
         self.sprite = pygame.image.load('assets/meteor_big.png')
 
-class MediumMeteor(BaseMeteor):
-    def __init__(self):
-        super().__init__()
-        self.sprite = pygame.image.load('assets/meteor_med.png')
+    def destroy(self):
+        return MediumMeteor(self.x, self.y)
 
 class Player:
     STATE_NEUTRAL = 0
@@ -103,8 +104,8 @@ basicFont = pygame.font.SysFont(None, 48)
 
 score = 0
 player = Player()
-meteor = BigMeteor()
-meteor2 = MediumMeteor()
+
+meteors = [BigMeteor(), MediumMeteor()]
 
 
 while True:
@@ -116,10 +117,9 @@ while True:
 
     # Draw our objects
     player.draw(window_surface)
-    meteor.draw(window_surface)
-    meteor.update()
-    meteor2.update()
-    meteor2.draw(window_surface)
+    for meteor in meteors:
+        meteor.update()
+        meteor.draw(window_surface)
 
     pygame.draw.circle(window_surface, WHITE, (300, 50), 20, 0)
 
@@ -137,6 +137,13 @@ while True:
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE:
                 player.shoot()
+                # destroy meteor
+                for meteor in meteors:
+                    if isinstance(meteor, BigMeteor):
+                        spwn = meteor.destroy()
+                        meteors.append(spwn)
+                        meteors.remove(meteor)
+                        break
 
         elif event.type == pygame.QUIT:
             pygame.quit()
