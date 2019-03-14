@@ -1,4 +1,5 @@
 import sys
+import random
 
 import pygame
 
@@ -12,7 +13,18 @@ WINDOW_HEIGHT = 1000
 
 class Meteor:
     def __init__(self):
+        self.sprite = pygame.image.load('assets/meteor0.png')
+        self.x = random.randint(100, WINDOW_WIDTH  - 100)
+        self.y = 0
+        self.dx = random.randint(-3,3)
+        self.dy = random.randint(-3,3)
 
+    def draw(self, surface):
+        surface.blit(self.sprite, (self.x, self.y))
+
+    def update(self):
+        self.x += self.dx
+        self.y += self.dy
 
 
 class Player:
@@ -77,10 +89,9 @@ pygame.display.set_caption('just game')
 # set up fonts
 basicFont = pygame.font.SysFont(None, 48)
 
-
 score = 0
 player = Player()
-
+meteor = Meteor()
 
 
 while True:
@@ -90,7 +101,10 @@ while True:
     text = basicFont.render(str(score), True, WHITE, BLUE)
     window_surface.blit(text, (0,0))
 
+    # Draw our objects
     player.draw(window_surface)
+    meteor.draw(window_surface)
+    meteor.update()
 
     pygame.draw.circle(window_surface, WHITE, (300, 50), 20, 0)
 
