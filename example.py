@@ -44,9 +44,9 @@ class BigMeteor(BaseMeteor):
 class PlasmaBall:
     WIDTH = 128
     HEIGHT = 128
+    sprite_sheet = pygame.image.load('assets/plasmaball.png')
 
     def __init__(self, x, y):
-        self.sprite_sheet = pygame.image.load('assets/plasmaball.png')
         self.x = x
         self.y = y
         self.speed = 2
@@ -95,6 +95,11 @@ class Player:
         self.y = WINDOW_HEIGHT - self.SPRITE_HEIGHT
         self.speed = 5
 
+        self.charge_rate = 1
+        self.plasma_cost = 40
+        self.max_charge = 70
+        self.charge = 40
+
     def draw(self, surface):
         if self.state == self.STATE_TURNING_LEFT:
             sprite = self.left
@@ -116,10 +121,16 @@ class Player:
     def set_neutral(self):
         self.state = self.STATE_NEUTRAL
 
+    def update(self):
+        print(self.charge)
+        self.charge = min(self.charge + self.charge_rate, self.max_charge)
+
     def shoot_plasma(self):
         # https://www.pygame.org/docs/ref/mixer.html#pygame.mixer.Sound
-        pygame.mixer.Sound.play(self.shoot_sound)
-        return PlasmaBall(self.x, self.y)
+        if self.charge >= self.plasma_cost:
+            self.charge -= self.plasma_cost
+            pygame.mixer.Sound.play(self.shoot_sound)
+            return PlasmaBall(self.x, self.y)
 
 
 pygame.init()
@@ -145,11 +156,16 @@ while True:
     text = basicFont.render(str(score), True, WHITE, BLUE)
     window_surface.blit(text, (0,0))
 
+    player_charge = basicFont.render(str(player.charge), True, WHITE, BLUE)
+    window_surface.blit(player_charge, (0, WINDOW_HEIGHT - player_charge.get_height()))
+
     # Draw our objects
     player.draw(window_surface)
     for obj in objects:
         obj.update()
         obj.draw(window_surface)
+
+    player.update()
 
     pygame.draw.circle(window_surface, WHITE, (300, 50), 20, 0)
 
@@ -167,7 +183,8 @@ while True:
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE:
                 pb = player.shoot_plasma()
-                objects.append(pb)
+                if pb:
+                    objects.append(pb)
         elif event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
