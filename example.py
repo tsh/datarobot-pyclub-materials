@@ -1,5 +1,6 @@
 import sys
 import random
+import itertools
 
 import pygame
 
@@ -39,6 +40,34 @@ class BigMeteor(BaseMeteor):
 
     def destroy(self):
         return MediumMeteor(self.x, self.y)
+
+class PlasmaBall:
+    WIDTH = 128
+    HEIGHT = 128
+
+    def __init__(self, x, y):
+        self.sprite_sheet = pygame.image.load('assets/plasmaball.png')
+        self.x = x
+        self.y = y
+        self.speed = 2
+        self.sprites = itertools.cycle(self.make_sprites())
+
+    def make_sprites(self):
+        sprites = []
+        for col in range(4):
+            for row in range(4):
+                x = self.WIDTH * col
+                y = self.HEIGHT * row
+                sprites.append((x, y, self.WIDTH, self.HEIGHT))
+        return sprites
+
+    def draw(self, surface):
+        coord = next(self.sprites)
+        surface.blit(self.sprite_sheet, (self.x, self.y), area=coord)
+
+    def update(self):
+        self.y -= self.speed
+
 
 class Player:
     STATE_NEUTRAL = 0
@@ -87,10 +116,10 @@ class Player:
     def set_neutral(self):
         self.state = self.STATE_NEUTRAL
 
-    def shoot(self):
+    def shoot_plasma(self):
         # https://www.pygame.org/docs/ref/mixer.html#pygame.mixer.Sound
-        print("pew pew")
         pygame.mixer.Sound.play(self.shoot_sound)
+        return PlasmaBall(self.x, self.y)
 
 
 pygame.init()
@@ -105,7 +134,8 @@ basicFont = pygame.font.SysFont(None, 48)
 score = 0
 player = Player()
 
-meteors = [BigMeteor(), MediumMeteor()]
+objects = [BigMeteor(), MediumMeteor()]
+
 
 
 while True:
@@ -117,9 +147,9 @@ while True:
 
     # Draw our objects
     player.draw(window_surface)
-    for meteor in meteors:
-        meteor.update()
-        meteor.draw(window_surface)
+    for obj in objects:
+        obj.update()
+        obj.draw(window_surface)
 
     pygame.draw.circle(window_surface, WHITE, (300, 50), 20, 0)
 
@@ -136,15 +166,8 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE:
-                player.shoot()
-                # destroy meteor
-                for meteor in meteors:
-                    if isinstance(meteor, BigMeteor):
-                        spwn = meteor.destroy()
-                        meteors.append(spwn)
-                        meteors.remove(meteor)
-                        break
-
+                pb = player.shoot_plasma()
+                objects.append(pb)
         elif event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
