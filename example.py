@@ -14,32 +14,36 @@ WINDOW_HEIGHT = 1000
 
 class BaseMeteor:
     def __init__(self, x, y):
-        self.x = x or random.randint(100, WINDOW_WIDTH  - 100)
-        self.y = y or random.randint(0, 200)
+        x = x or random.randint(100, WINDOW_WIDTH  - 100)
+        y = y or random.randint(0, 200)
         self.dx = random.randint(-3,3)
         self.dy = random.randint(-3,3)
+        self.rect = pygame.Rect(x, y, self.sprite.get_width(), self.sprite.get_height())
 
     def draw(self, surface):
-        surface.blit(self.sprite, (self.x, self.y))
+        surface.blit(self.sprite, (self.rect.x, self.rect.y))
 
     def update(self):
-        self.x += self.dx
-        self.y += self.dy
+        self.rect = self.rect.move(self.dx, self.dy)
+
+    def is_hit_by(self, projectile):
+        return self.rect.colliderect(projectile.rect)
 
 
 class MediumMeteor(BaseMeteor):
     def __init__(self, x=None, y=None):
-        super().__init__(x, y)
         self.sprite = pygame.image.load('assets/meteor_med.png')
+        super().__init__(x, y)
 
 
 class BigMeteor(BaseMeteor):
     def __init__(self, x=None, y=None):
-        super().__init__(x, y)
         self.sprite = pygame.image.load('assets/meteor_big.png')
+        super().__init__(x, y)
 
     def destroy(self):
-        return MediumMeteor(self.x, self.y)
+        return MediumMeteor(self.rect.x, self.rect.y)
+
 
 class PlasmaBall:
     WIDTH = 128
@@ -49,8 +53,9 @@ class PlasmaBall:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.speed = 2
+        self.speed = 4
         self.sprites = itertools.cycle(self.make_sprites())
+        self.rect = pygame.Rect(self.x, self.y, self.WIDTH, self.HEIGHT)
 
     def make_sprites(self):
         sprites = []
@@ -66,6 +71,7 @@ class PlasmaBall:
         surface.blit(self.sprite_sheet, (self.x, self.y), area=coord)
 
     def update(self):
+        self.rect = self.rect.move(0, -self.speed)
         self.y -= self.speed
 
 
@@ -122,7 +128,6 @@ class Player:
         self.state = self.STATE_NEUTRAL
 
     def update(self):
-        print(self.charge)
         self.charge = min(self.charge + self.charge_rate, self.max_charge)
 
     def shoot_plasma(self):
@@ -145,7 +150,7 @@ basicFont = pygame.font.SysFont(None, 48)
 score = 0
 player = Player()
 
-objects = [BigMeteor(), MediumMeteor()]
+objects = [BigMeteor(), BigMeteor(), BigMeteor(), MediumMeteor(), MediumMeteor(), MediumMeteor(), BigMeteor(), BigMeteor(), BigMeteor(), MediumMeteor(), MediumMeteor(), MediumMeteor()]
 
 
 
@@ -159,6 +164,16 @@ while True:
     player_charge = basicFont.render(str(player.charge), True, WHITE, BLUE)
     window_surface.blit(player_charge, (0, WINDOW_HEIGHT - player_charge.get_height()))
 
+    # check collision
+    for obj in objects:
+        for target in objects:
+            if obj is target:
+                continue
+            elif isinstance(obj, PlasmaBall) and isinstance(target, BaseMeteor):
+                if target.is_hit_by(obj):
+                    objects.remove(target)
+                    score += 1
+
     # Draw our objects
     player.draw(window_surface)
     for obj in objects:
@@ -166,8 +181,6 @@ while True:
         obj.draw(window_surface)
 
     player.update()
-
-    pygame.draw.circle(window_surface, WHITE, (300, 50), 20, 0)
 
     pygame.display.update()
     # https://www.pygame.org/docs/ref/key.html
@@ -188,4 +201,3 @@ while True:
         elif event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-
