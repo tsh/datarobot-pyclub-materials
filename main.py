@@ -1,3 +1,9 @@
+"""
+When I see patterns in my programs, I consider it a sign of trouble. The shape of a
+program should reflect only the problem it needs to solve.
+--Paul Graham, Lisp hacker and venture capitalist
+"""
+
 import pygame
 import sys
 from itertools import cycle
@@ -30,10 +36,11 @@ class MeteoritMed(MeteorBase):
 
 class Ball:
 
-    def __init__ (self):
-        self.img_ball = pygame.image.load('assets/plasmaball.png')
-        self.x = 200
-        self.y = 100
+    IMG_BALL = pygame.image.load('assets/plasmaball.png')
+
+    def __init__ (self, x, y):
+        self.x = x
+        self.y = y
         self.width = 128
         self.height = 128
 
@@ -45,8 +52,14 @@ class Ball:
             self.image_coordinates.append(img_coord)
         print(self.image_coordinates)
 
+        self.cycled_coordinates = cycle(self.image_coordinates)
+
     def draw(self, surface):
-        surface.blit(self.img_ball, (self.x, self.y), self.image_coordinates[3])
+        surface.blit(Ball.IMG_BALL, (self.x, self.y), next(self.cycled_coordinates))
+
+    def move(self):
+        self.y -= 10
+
 
 class Player:
 
@@ -84,9 +97,13 @@ class Player:
     def set_main(self):
         self.state = Player.STATE_MAIN
 
-player = Player()
 
-ball = Ball()
+    def shoot(self):
+        return Ball(self.x, self.y - 70)
+
+
+
+player = Player()
 
 pygame.init()
 
@@ -99,17 +116,16 @@ basicFont = pygame.font.SysFont(None, 48)
 text = basicFont.render('0', True, (255,255,0), BLACK)
 window_surface.blit(text, (0,0))
 
-meteors = [MeteoritMed(), MeteoritBig()]
+all_game_objects = [MeteoritMed(), MeteoritBig()]
 
 while True:
     window_surface.fill(BLACK)
-    player.draw(window_surface)
     pygame.time.Clock().tick(20)
-    ball.draw(window_surface)
 
-    for meteor in meteors:
-        meteor.draw(window_surface)
-        meteor.move()
+    for obj in all_game_objects:
+        obj.draw(window_surface)
+        obj.move()
+    player.draw(window_surface)
 
     pygame.display.update()
 
@@ -120,9 +136,10 @@ while True:
             if event.key == pygame.K_RIGHT:
                 player.move_right()
             if event.key == pygame.K_SPACE:
-                for meteor in meteors:
-                    if isinstance(meteor, MeteoritBig):
-                        meteors.remove (meteor)
+                ball = player.shoot()
+                all_game_objects.append(ball)
+
+
 
         if event.type == pygame.QUIT:
             pygame.quit()
