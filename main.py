@@ -12,6 +12,9 @@ BLACK = (0,0,0)
 
 class MeteorBase:
 
+    #def __init__(self):
+        #self.rectangle = pygame.Rect(x, y, self.width, self.height)
+
     def draw (self, surface):
         surface.blit(self.img, (self.x, self.y))
 
@@ -21,9 +24,16 @@ class MeteorBase:
 class MeteoritBig(MeteorBase):
     def __init__ (self):
         self.img = pygame.image.load('assets/meteor_big.png')
-        self.x = 100
-        self.y = 100
+        self.rectangle = pygame.Rect(100, 100, self.img.get_width(), self.img.get_height())
 
+    def draw (self, surface):
+        surface.blit(self.img, (self.rectangle.x, self.rectangle.y))
+
+    def move (self):
+        self.rectangle.x += 1
+
+    def is_hit(self, shot):
+        pass
 
 class MeteoritMed(MeteorBase):
     def __init__ (self):
@@ -39,10 +49,9 @@ class Ball:
     IMG_BALL = pygame.image.load('assets/plasmaball.png')
 
     def __init__ (self, x, y):
-        self.x = x
-        self.y = y
         self.width = 128
         self.height = 128
+        self.rectangle = pygame.Rect(x, y, self.width, self.height)
 
         self.image_coordinates = []
 
@@ -55,10 +64,11 @@ class Ball:
         self.cycled_coordinates = cycle(self.image_coordinates)
 
     def draw(self, surface):
-        surface.blit(Ball.IMG_BALL, (self.x, self.y), next(self.cycled_coordinates))
+        surface.blit(Ball.IMG_BALL, (self.rectangle.x, self.rectangle.y), next(self.cycled_coordinates))
 
     def move(self):
-        self.y -= 10
+        self.rectangle.y -= 10
+
 
 
 class Player:
