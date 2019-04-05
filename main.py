@@ -113,6 +113,49 @@ class Player:
         return Ball(self.x, self.y - 70)
 
 
+class Enemy:
+
+    img_main = pygame.image.load('assets/Enemy_animation/spaceship_enemy_start.png')
+    img_main = pygame.transform.flip(img_main, False, True)
+    img1 = pygame.image.load('assets/Enemy_animation/1.png')
+    img2 = pygame.image.load('assets/Enemy_animation/2.png')
+    img3 = pygame.image.load('assets/Enemy_animation/3.png')
+    img4 = pygame.image.load('assets/Enemy_animation/4.png')
+    img5 = pygame.image.load('assets/Enemy_animation/5.png')
+    img6 = pygame.image.load('assets/Enemy_animation/6.png')
+    img7 = pygame.image.load('assets/Enemy_animation/7.png')
+    IMAGES = [img1, img2, img3, img4, img5, img6, img7]
+    ANIMATIONS = []
+
+
+
+    def __init__ (self):
+        self.img_main = pygame.transform.scale(Enemy.img_main, (150, 140))
+
+        self.x = 400
+        self.y = 100
+        self.iterable_animations = cycle(Enemy.ANIMATIONS)
+
+
+    def transform_and_scale_pictures(self):
+        for img in Enemy.IMAGES:
+            scaled_img = pygame.transform.scale(img, (150, 140))
+            flipped_img = pygame.transform.flip(scaled_img, False, True)
+            Enemy.ANIMATIONS.append(flipped_img)
+
+
+    def draw_animation(self, surface):
+        surface.blit(next(self.iterable_animations), (self.x, self.y))
+
+    def draw(self, surface):
+        surface.blit(self.img_main, (self.x, self.y))
+
+    def move(self):
+        self.y += 4
+
+
+enemy = Enemy()
+enemy.transform_and_scale_pictures()
 
 player = Player()
 
@@ -127,11 +170,13 @@ basicFont = pygame.font.SysFont(None, 48)
 text = basicFont.render('0', True, (255,255,0), BLACK)
 window_surface.blit(text, (0,0))
 
-all_game_objects = [MeteoritMed(), MeteoritBig()]
+all_game_objects = [MeteoritMed(), MeteoritBig(), enemy]
 
 while True:
     window_surface.fill(BLACK)
     pygame.time.Clock().tick(20)
+    enemy.draw_animation(window_surface)
+
 
     for obj in all_game_objects:
         obj.draw(window_surface)
@@ -141,8 +186,6 @@ while True:
                 if isinstance(space_obj, MeteoritBig):
                     if space_obj.is_hit(obj):
                         all_game_objects.remove(space_obj)
-
-
 
     player.draw(window_surface)
 
