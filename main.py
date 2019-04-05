@@ -33,7 +33,8 @@ class MeteoritBig(MeteorBase):
         self.rectangle.x += 1
 
     def is_hit(self, shot):
-        pass
+        return self.rectangle.colliderect(shot.rectangle)
+
 
 class MeteoritMed(MeteorBase):
     def __init__ (self):
@@ -43,6 +44,7 @@ class MeteoritMed(MeteorBase):
 
     def move (self):
         self.y += 1
+
 
 class Ball:
 
@@ -70,7 +72,6 @@ class Ball:
         self.rectangle.y -= 10
 
 
-
 class Player:
 
     STATE_LEFT = 'left'
@@ -84,7 +85,7 @@ class Player:
         self.img_main = pygame.transform.scale(img_main, (170, 160))
         self.img_left = pygame.transform.scale(img_left, (170, 160))
         self.img_right = pygame.transform.scale(img_right, (170, 160))
-        self.x = 200
+        self.x = 700
         self.y = 200
         self.state = Player.STATE_MAIN
 
@@ -135,6 +136,14 @@ while True:
     for obj in all_game_objects:
         obj.draw(window_surface)
         obj.move()
+        if isinstance(obj, Ball):
+            for space_obj in all_game_objects:
+                if isinstance(space_obj, MeteoritBig):
+                    if space_obj.is_hit(obj):
+                        all_game_objects.remove(space_obj)
+
+
+
     player.draw(window_surface)
 
     pygame.display.update()
