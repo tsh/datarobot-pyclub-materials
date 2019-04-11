@@ -1,3 +1,17 @@
+# def myfunc(myarg):
+#     print(myarg)
+#     
+# f = myfunc
+# print(f)
+# print(myfunc)
+
+# f(2)
+
+# def caller(f, arg):
+#     f(arg) 
+
+# caller(myfunc, 42)
+
 
 # ---
 # def deco(func):
@@ -65,4 +79,4 @@
 # higher order function
 # write func that accepts 1 integer arguments and returns same arguments multiplied by 2
 # use map for example, substitute with lambda
-# write func that
+# write func that accepts one argument, and return True if the argument is even. Apply this with `filter` function to array.
