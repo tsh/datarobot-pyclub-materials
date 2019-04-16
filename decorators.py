@@ -1,6 +1,7 @@
+
 # def myfunc(myarg):
 #     print(myarg)
-#     
+
 # f = myfunc
 # print(f)
 # print(myfunc)
@@ -8,32 +9,36 @@
 # f(2)
 
 # def caller(f, arg):
-#     f(arg) 
+#     f(arg)
 
-# caller(myfunc, 42)
+# caller(f, 42)
 
 
 # ---
 # def deco(func):
+#     print('running deco')
 #     def inner():
 #         print('running inner()')
 #     return inner
+
 #
 #
 # @deco
 # def target():
 #     print('running target()')
 
-# target()
+# decorated = deco(target)
 
 # Inspection reveals that target is a now a reference to inner
-# print(target)
+# print(target())
+
+# target()
 
 # decorators are just syntactic sugar
-# target = deco(target)
 
 # ---
 # Decorators run at import time (when module loaded by python)
+
 # registry = []
 #
 # def register(func):
@@ -51,9 +56,9 @@
 #
 # def f3():
 #     print('running f3()')
-
+#
 # print('registry ->', registry)
-# [f() for f in registry]
+# print([f() for f in registry])
 
 # --- proper decorator
 
@@ -80,3 +85,19 @@
 # write func that accepts 1 integer arguments and returns same arguments multiplied by 2
 # use map for example, substitute with lambda
 # write func that accepts one argument, and return True if the argument is even. Apply this with `filter` function to array.
+
+# def decorator_with_arguments(myarg):
+#     def wrap(f):
+#         print ("Inside wrap()")
+#         def inner(*args):
+#             print ("Inside wrapped_f(), decorator argument: ", myarg)
+#             f(*args)
+#             print ("After f(*args)")
+#         return inner
+#     return wrap
+#
+# @decorator_with_arguments(42)
+# def say_number(a1, a2, a3, a4):
+#     print ("say_number arguments: ", a1, a2, a3, a4)
+#
+# say_number(1,2,3,4)
